@@ -11,11 +11,20 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
+from os.path import join
+import environ
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# config environment variables to read from file config.env
+env = environ.Env()
+environ.Env.read_env(join(BASE_DIR, 'config.env'))
 
+DB_NAME = env('DB_NAME')
+DB_USER = env('DB_USER')
+DB_PASSWORD = env('DB_PASSWORD')
+DB_HOST = env('DB_HOST')
+DB_PORT = env('DB_PORT')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -27,6 +36,18 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    'http://localhost:8000',
+    "http://127.0.0.1:5173",
+    'http://localhost:5173',
+]
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    'http://localhost:8000',
+    "http://127.0.0.1:5173",
+    'http://localhost:5173',
+]
 
 # Application definition
 
@@ -37,6 +58,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    'account'
 ]
 
 MIDDLEWARE = [
@@ -75,8 +101,12 @@ WSGI_APPLICATION = 'backend_ecommerce.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
     }
 }
 
@@ -105,7 +135,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Ho_Chi_Minh'
 
 USE_I18N = True
 
